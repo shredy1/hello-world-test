@@ -21,11 +21,14 @@ package com.freedomotic.things.impl;
 
 import com.freedomotic.events.ObjectReceiveClick;
 import com.freedomotic.model.ds.Config;
+import com.freedomotic.model.object.Behavior;
 import com.freedomotic.model.object.RangedIntBehavior;
 import com.freedomotic.things.EnvObjectLogic;
 import com.freedomotic.behaviors.RangedIntBehaviorLogic;
+import com.freedomotic.reactions.Command;
 import com.freedomotic.reactions.Trigger;
 import java.util.logging.Logger;
+
 
 /**
  *
@@ -34,6 +37,10 @@ import java.util.logging.Logger;
 public class Thermometer
         extends EnvObjectLogic {
 
+	String temp_off = "200";
+	String temp_faible = "110";
+	
+	
     private static final Logger LOG = Logger.getLogger(Thermometer.class.getName());
     private RangedIntBehaviorLogic temperature;
     private static final String BEHAVIOR_TEMPERATURE = "temperature";
@@ -99,10 +106,49 @@ public class Thermometer
      */
     @Override
     protected void createCommands() {
+    	super.createCommands();
+    
+    	
+    	
+    
+    	Command increaseThermTemp = new Command();
+    	increaseThermTemp.setName("Increase " + getPojo().getName() + " conditioning temperature with O.5°C");
+    	increaseThermTemp.setDescription("increases " + getPojo().getName() + " conditioning temperature of half a step");
+    	increaseThermTemp.setReceiver("app.events.sensors.behavior.request.objects");
+    	increaseThermTemp.setProperty("object", getPojo().getName());
+    	increaseThermTemp.setProperty("behavior", BEHAVIOR_TEMPERATURE);
+    	increaseThermTemp.setProperty("value", "200");
+    	
+   
+    	Command increaseThermTemp2 = new Command();
+    	increaseThermTemp2.setName("Increase " + getPojo().getName() + " conditioning temperature with 1°C");
+    	increaseThermTemp2.setDescription("increases " + getPojo().getName() + " conditioning temperature of a step");
+    	increaseThermTemp2.setReceiver("app.events.sensors.behavior.request.objects");
+    	increaseThermTemp2.setProperty("object", getPojo().getName());
+    	increaseThermTemp2.setProperty("behavior", BEHAVIOR_TEMPERATURE);
+    	increaseThermTemp2.setProperty("value", "110");
+    	
+     
+    	
+    	Command decreaseThermTemp = new Command();
+    	decreaseThermTemp.setName("Set temperature of  " + getPojo().getName() + " to TE");
+    	decreaseThermTemp.setDescription("set temperature of  " + getPojo().getName() + " to TE");
+    	decreaseThermTemp.setReceiver("app.events.sensors.behavior.request.objects");
+    	decreaseThermTemp.setProperty("object", getPojo().getName());
+    	decreaseThermTemp.setProperty("behavior", BEHAVIOR_TEMPERATURE);
+    	decreaseThermTemp.setProperty("value", "90");
+
+ 	   
+    	
+    	commandRepository.create(increaseThermTemp);
+    	commandRepository.create(increaseThermTemp2);
+        commandRepository.create(decreaseThermTemp );
+    
     }
 
     @Override
     protected void createTriggers() {
+ 
         Trigger clicked = new Trigger();
         clicked.setName("When " + this.getPojo().getName() + " is clicked");
         clicked.setChannel("app.event.sensor.object.behavior.clicked");
@@ -111,5 +157,58 @@ public class Thermometer
         clicked.getPayload().addStatement("click", ObjectReceiveClick.SINGLE_CLICK);
         clicked.setPersistence(false);
         triggerRepository.create(clicked);
+        
+        
+        Trigger tempReach_off = new Trigger();
+        tempReach_off.setName("When temp of " + this.getPojo().getName() + " reached OFF");
+        tempReach_off.setChannel("app.event.sensor.object.behavior.change");
+        tempReach_off.getPayload().addStatement("object.name",
+                this.getPojo().getName());
+        
+        tempReach_off.getPayload().addStatement("AND", "Object.behavior." + BEHAVIOR_TEMPERATURE , "GREATER_EQUAL_THAN" , "200");
+        
+        tempReach_off.setPersistence(false);
+        triggerRepository.create(tempReach_off);
+        
+        
+        Trigger tempReach_faible = new Trigger();
+        tempReach_faible.setName("When temp of " + this.getPojo().getName() + " reached FAIBLE");
+        tempReach_faible.setChannel("app.event.sensor.object.behavior.change");
+        tempReach_faible.getPayload().addStatement("object.name",
+                this.getPojo().getName());
+        
+        tempReach_faible.getPayload().addStatement("AND", "Object.behavior." + BEHAVIOR_TEMPERATURE , "GREATER_EQUAL_THAN" , "110");
+        tempReach_faible.getPayload().addStatement("AND", "Object.behavior." + BEHAVIOR_TEMPERATURE , "LESS_THAN" , "200");
+        
+        tempReach_faible.setPersistence(false);
+        triggerRepository.create(tempReach_faible);
+        
+        
+        
+        Trigger tempReach_fort = new Trigger();
+        tempReach_fort.setName("When temp of " + this.getPojo().getName() + " reached FORT");
+        tempReach_fort.setChannel("app.event.sensor.object.behavior.change");
+        tempReach_fort.getPayload().addStatement("object.name",
+                this.getPojo().getName());
+        
+ 
+        tempReach_fort.getPayload().addStatement("AND", "Object.behavior." + BEHAVIOR_TEMPERATURE , "LESS_THAN" , "110");
+        
+        tempReach_fort.setPersistence(false);
+        triggerRepository.create(tempReach_fort);
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     }
 }

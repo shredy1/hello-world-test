@@ -389,6 +389,10 @@ public class Gate extends EnvObjectLogic implements GenericGate {
         o.setProperty("behavior", BEHAVIOR_OPEN);
         o.setProperty("value", "opposite");
 
+        
+        
+        
+        
         commandRepository.create(a);
         commandRepository.create(b);
         commandRepository.create(c);

@@ -13,7 +13,7 @@
       <active>true</active>
       <priority>-1</priority>
       <readOnly>true</readOnly>
-      <value>0</value>
+      <value>170</value>
       <max>1000</max>
       <min>-600</min>
       <step>1</step>

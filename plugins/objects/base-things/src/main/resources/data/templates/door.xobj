@@ -1,6 +1,6 @@
 <object>
-  <name>Door</name>
-  <description>A door capable of open and close</description>
+  <name>Window</name>
+  <description>A window capable of open and close</description>
   <actAs>virtual</actAs>
   <type>EnvObject.Gate</type>
   <hierarchy>com.freedomotic.things.impl.Gate</hierarchy>

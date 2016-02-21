@@ -37,7 +37,7 @@
       <active>true</active>
       <priority>-1</priority>
       <value>0</value>
-      <max>5</max>
+      <max>2</max>
       <min>0</min>
       <step>1</step>
     </com.freedomotic.model.object.RangedIntBehavior>
@@ -48,12 +48,8 @@
       <priority>-1</priority>
       <selected>0</selected>
       <list>
-        <string>Auto</string>
-        <string>Dry</string>
-        <string>Cool</string>
-        <string>Heat</string>
-        <string>Fan</string>
-        <string>Humidity</string>
+        <string>Confort</string>
+        <string>Eco</string>
       </list>
     </com.freedomotic.model.object.ListBehavior>
   </behaviors>

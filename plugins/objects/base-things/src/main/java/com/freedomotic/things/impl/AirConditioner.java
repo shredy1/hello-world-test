@@ -28,6 +28,7 @@ import com.freedomotic.behaviors.RangedIntBehaviorLogic;
 import com.freedomotic.model.object.BooleanBehavior;
 import com.freedomotic.model.object.ListBehavior;
 import com.freedomotic.reactions.Command;
+import com.freedomotic.reactions.Trigger;
 
 /**
  * An 'Air Conditioner' thing abstraction. Type is
@@ -104,7 +105,7 @@ public class AirConditioner extends ElectricDevice {
             }
         });
 
-        // Sets the conditioning mode (auto, dry, cool, heat, fan, humidity ...)
+        // Sets the conditioning mode (confort, eco ...)
         conditioningMode = new ListBehaviorLogic((ListBehavior) getPojo().getBehavior(BEHAVIOR_CONDITIONING_MODE));
         conditioningMode.addListener(new ListBehaviorLogic.Listener() {
 
@@ -270,8 +271,32 @@ public class AirConditioner extends ElectricDevice {
         prevCondMode.setProperty("object", getPojo().getName());
         prevCondMode.setProperty("behavior", BEHAVIOR_CONDITIONING_MODE);
         prevCondMode.setProperty("value", Behavior.VALUE_PREVIOUS);
+        
+        
+        Command speedFort = new Command();
+        speedFort.setName("Speed of " + getPojo().getName() + " fort");
+        speedFort.setDescription("speed " + getPojo().getName() + " fort");
+        speedFort.setReceiver("app.events.sensors.behavior.request.objects");
+        speedFort.setProperty("object", getPojo().getName());
+        speedFort.setProperty("behavior", BEHAVIOR_FAN_SPEED );
+        speedFort.setProperty("value", "2");
+        
+        Command speedFaible = new Command();
+        speedFaible.setName("Speed of " + getPojo().getName() + " faible");
+        speedFaible.setDescription("speed " + getPojo().getName() + " faible");
+        speedFaible.setReceiver("app.events.sensors.behavior.request.objects");
+        speedFaible.setProperty("object", getPojo().getName());
+        speedFaible.setProperty("behavior", BEHAVIOR_FAN_SPEED );
+        speedFaible.setProperty("value", "1");
+        
+        
+        
+        
+        
 
         //TODO: add missing commands!
+        commandRepository.create(speedFaible);
+        commandRepository.create(speedFort);
         commandRepository.create(increaseCondTemp);
         commandRepository.create(decreaseCondTemp);
         commandRepository.create(prevCondMode);
@@ -281,5 +306,39 @@ public class AirConditioner extends ElectricDevice {
     @Override
     protected void createTriggers() {
         super.createTriggers();
+        
+        
+        
+        Trigger mode_fort = new Trigger();
+        mode_fort.setName("When radiateur  " + this.getPojo().getName() + "  is on mode speed fort");
+        mode_fort.setChannel("app.event.sensor.object.behavior.change");
+    
+        mode_fort.getPayload().addStatement("object.name",
+                this.getPojo().getName());
+       
+        mode_fort.getPayload().addStatement("AND", "Object.behavior." + BEHAVIOR_FAN_SPEED , "EQUALS" , "2");
+      
+        mode_fort.setPersistence(false);
+        
+        triggerRepository.create(mode_fort);
+        
+        Trigger mode_faible = new Trigger();
+        mode_faible.setName("When radiatuer  " + this.getPojo().getName() + "  is on mode speed faible");
+        mode_faible.setChannel("app.event.sensor.object.behavior.change");
+        mode_faible.getPayload().addStatement("object.name",
+                this.getPojo().getName());
+        
+        mode_faible.getPayload().addStatement("AND", "Object.behavior." + BEHAVIOR_FAN_SPEED  , "EQUALS" , "1");
+        
+        mode_faible.setPersistence(false);
+        triggerRepository.create(mode_faible);
+        
+        
+        
+        
+        
+        
+        
+        
     }
 }
